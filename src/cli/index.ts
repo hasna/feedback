@@ -276,13 +276,28 @@ export async function main(argv: string[] = process.argv): Promise<void> {
     .command("status")
     .description("Update feedback status")
     .argument("<id>", "Feedback id")
-    .argument("<status>", "new, triaged, or closed")
+    .argument("<status>", "new, triaged, shipped, or closed")
     .option("--api-url <url>", "Remote Open Feedback API URL")
     .option("--token <token>", "API bearer token")
     .action(async (id: string, status: string, options: { apiUrl?: string; token?: string }) => {
       const parsedStatus = parseFeedbackStatus(status);
       const client = maybeClient(options);
       const item = client ? await client.updateStatus(id, parsedStatus) : await localStore().updateFeedbackStatus(id, parsedStatus);
+      if (!item) {
+        console.error(`Feedback not found: ${id}`);
+        process.exitCode = 1;
+        return;
+      }
+      printJson(item);
+    });
+
+  program
+    .command("shipped")
+    .description("Mark feedback as shipped and link it to the changelog entry that shipped it")
+    .argument("<id>", "Feedback id")
+    .requiredOption("--changelog-ref <ref>", "Changelog entry id or URI (feedback → changelog linkage)")
+    .action(async (id: string, options: { changelogRef: string }) => {
+      const item = await localStore().markFeedbackShipped(id, options.changelogRef);
       if (!item) {
         console.error(`Feedback not found: ${id}`);
         process.exitCode = 1;
