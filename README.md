@@ -124,7 +124,7 @@ feedback export --format jsonl --until 2026-12-31
 
 Use `--api-url` and `--token` to target a remote Open Feedback API instead of local JSONL storage. This is the CLI path for a shared production deployment; the CLI does not open database connections or create cloud resources itself.
 
-`feedback shipped <id> --changelog-ref <ref>` marks feedback as shipped, records the changelog-entry linkage (`changelogRef`, `shippedAt`), and emits the `feedback.triaged` notification event with disposition `shipped`.
+`feedback shipped <id> --changelog-ref <ref>` marks feedback as shipped, records the changelog-entry linkage (`changelogRef`, `shippedAt`), and emits the `feedback.triaged` notification event with disposition `shipped`. **Local store only for now**: the remote API has no shipped endpoint yet, so the command takes no `--api-url`/`--token`. Against a remote API, `feedback status <id> shipped` moves the status (without recording a `changelogRef`); a remote shipped endpoint is a follow-up.
 
 ### Distribution events
 

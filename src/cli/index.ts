@@ -293,7 +293,11 @@ export async function main(argv: string[] = process.argv): Promise<void> {
 
   program
     .command("shipped")
-    .description("Mark feedback as shipped and link it to the changelog entry that shipped it")
+    .description(
+      "Mark feedback as shipped and link it to the changelog entry that shipped it. " +
+        "Local store only for now (the remote API has no shipped endpoint yet); " +
+        "against a remote API use `status <id> shipped`, which records no changelogRef",
+    )
     .argument("<id>", "Feedback id")
     .requiredOption("--changelog-ref <ref>", "Changelog entry id or URI (feedback → changelog linkage)")
     .action(async (id: string, options: { changelogRef: string }) => {
