@@ -301,7 +301,13 @@ export async function main(argv: string[] = process.argv): Promise<void> {
     .argument("<id>", "Feedback id")
     .requiredOption("--changelog-ref <ref>", "Changelog entry id or URI (feedback → changelog linkage)")
     .action(async (id: string, options: { changelogRef: string }) => {
-      const item = await localStore().markFeedbackShipped(id, options.changelogRef);
+      const store = localStore();
+      if (!store.markFeedbackShipped) {
+        console.error("feedback shipped is only supported for the local store");
+        process.exitCode = 1;
+        return;
+      }
+      const item = await store.markFeedbackShipped(id, options.changelogRef);
       if (!item) {
         console.error(`Feedback not found: ${id}`);
         process.exitCode = 1;
